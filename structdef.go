@@ -1,8 +1,6 @@
 package goserbench
 
 import (
-	"errors"
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -18,7 +16,7 @@ type A struct {
 	Money    float64
 }
 
-func NewA() Object {
+func NewA() interface{} {
 	return &A{
 		Name:     randString(16),
 		BirthDay: time.Now(),
@@ -27,18 +25,4 @@ func NewA() Object {
 		Spouse:   rand.Intn(2) == 1,
 		Money:    rand.Float64(),
 	}
-}
-
-func (a *A) Reset() { *a = A{} }
-func (a *A) AssertEqual(i interface{}) (bool, error) {
-	o, ok := i.(*A)
-	if !ok {
-		return false, errors.New("not A type")
-	}
-	isEqual := o.Name == a.Name && o.Phone == a.Phone && o.Siblings == a.Siblings && o.Spouse == a.Spouse && o.Money == a.Money && o.BirthDay.Equal(a.BirthDay)
-	var err error
-	if !isEqual {
-		err = fmt.Errorf("\n%#v\n%#v", *o, *a)
-	}
-	return isEqual, err
 }

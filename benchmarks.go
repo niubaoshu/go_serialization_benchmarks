@@ -29,14 +29,9 @@ type (
 		NeedGeneratingCode() bool
 	}
 
-	Object interface {
-		AssertEqual(interface{}) (bool, error)
-		Reset()
-	}
-
 	benchSerializer struct {
 		s   Serializer
-		new func() Object
+		new func() interface{}
 	}
 	BenchSerializer struct {
 		ss     []benchSerializer
@@ -49,7 +44,7 @@ func NewBenchSerializer() *BenchSerializer {
 	return &BenchSerializer{}
 }
 
-func (bs *BenchSerializer) AddSerializer(s Serializer, new func() Object) {
+func (bs *BenchSerializer) AddSerializer(s Serializer, new func() interface{}) {
 	bs.ss = append(bs.ss, benchSerializer{
 		s:   s,
 		new: new,
@@ -65,17 +60,16 @@ func (s *serializeBenchResault) String(l int) string {
 
 	//marshal := []string{}
 	//unmarshal := []string{}
-	var length = s.length / s.marshalResult.N
 	if s.merr != nil {
 		marshal = append(marshal, s.merr.Error())
 	} else {
-		marshal = append(marshal, benchResultToString(&s.marshalResult, length, s.serializer.NeedGeneratingCode())...)
+		marshal = append(marshal, benchResultToString(&s.marshalResult, s.length, s.serializer.NeedGeneratingCode())...)
 	}
 
 	if s.unmerr != nil {
 		unmarshal = append(unmarshal, s.unmerr.Error())
 	} else {
-		unmarshal = append(unmarshal, benchResultToString(&s.unmarshalResult, length, s.serializer.NeedGeneratingCode())...)
+		unmarshal = append(unmarshal, benchResultToString(&s.unmarshalResult, s.length, s.serializer.NeedGeneratingCode())...)
 	}
 	return strings.Join(marshal, "\t") + "\n" + strings.Join(unmarshal, "\t")
 }

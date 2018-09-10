@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/mailru/easyjson"
 	"github.com/niubaoshu/gotiny"
@@ -583,7 +582,7 @@ func init() { B.AddSerializer(ProtobufSerializer{}, NewA) }
 
 // github.com/golang/protobuf
 
-func NewProtoBufA() Object {
+func NewProtoBufA() interface{} {
 	return &ProtoBufA{
 		Name:     proto.String(randString(16)),
 		BirthDay: proto.Int64(time.Now().UnixNano()),
@@ -592,15 +591,6 @@ func NewProtoBufA() Object {
 		Spouse:   proto.Bool(rand.Intn(2) == 1),
 		Money:    proto.Float64(rand.Float64()),
 	}
-}
-
-func (i *ProtoBufA) AssertEqual(a interface{}) (bool, error) {
-	o, ok := a.(*ProtoBufA)
-	if !ok {
-		return false, errors.New("not A type")
-	}
-	correct := *o.Name == *i.Name && *o.Phone == *i.Phone && *o.Siblings == *i.Siblings && *o.Spouse == *i.Spouse && *o.Money == *i.Money && *o.BirthDay == *i.BirthDay
-	return correct, nil
 }
 
 type GoprotobufSerializer struct {
@@ -623,7 +613,7 @@ func init() { B.AddSerializer(GoprotobufSerializer{}, NewProtoBufA) }
 
 // github.com/gogo/protobuf/proto
 
-func NewGogoProtoBufA() Object {
+func NewGogoProtoBufA() interface{} {
 	return &GogoProtoBufA{
 		Name:     randString(16),
 		BirthDay: time.Now().UnixNano(),
@@ -632,14 +622,6 @@ func NewGogoProtoBufA() Object {
 		Spouse:   rand.Intn(2) == 1,
 		Money:    rand.Float64(),
 	}
-}
-
-func (i *GogoProtoBufA) AssertEqual(a interface{}) (bool, error) {
-	o, ok := a.(*GogoProtoBufA)
-	if !ok {
-		return false, errors.New("not A type")
-	}
-	return *i == *o, nil
 }
 
 type GogoProtoBufSerializer struct {
@@ -654,7 +636,7 @@ func init() { B.AddSerializer(GogoProtoBufSerializer{}, NewGogoProtoBufA) }
 
 // github.com/pascaldekloe/colfer
 
-func NewColferA() Object {
+func NewColferA() interface{} {
 	return &ColferA{
 		Name:     randString(16),
 		BirthDay: time.Now(),
@@ -663,12 +645,6 @@ func NewColferA() Object {
 		Spouse:   rand.Intn(2) == 1,
 		Money:    rand.Float64(),
 	}
-}
-
-func (a *ColferA) Reset() { *a = ColferA{} }
-
-func (a *ColferA) AssertEqual(i interface{}) (bool, error) {
-	return (*A)(unsafe.Pointer(a)).AssertEqual((*A)(unsafe.Pointer(i.(*ColferA))))
 }
 
 type ColferSerializer struct {
@@ -691,7 +667,7 @@ func init() { B.AddSerializer(ColferSerializer{}, NewColferA) }
 
 // github.com/andyleap/gencode
 
-func NewGencodeA() Object {
+func NewGencodeA() interface{} {
 	return &GencodeA{
 		Name:     randString(16),
 		BirthDay: time.Now(),
@@ -700,12 +676,6 @@ func NewGencodeA() Object {
 		Spouse:   rand.Intn(2) == 1,
 		Money:    rand.Float64(),
 	}
-}
-
-func (a *GencodeA) Reset() { *a = GencodeA{} }
-
-func (a *GencodeA) AssertEqual(i interface{}) (bool, error) {
-	return (*A)(unsafe.Pointer(a)).AssertEqual((*A)(unsafe.Pointer(i.(*GencodeA))))
 }
 
 type GencodeSerializer struct {
@@ -727,7 +697,7 @@ func (GencodeSerializer) String() string {
 
 func init() { B.AddSerializer(GencodeSerializer{}, NewGencodeA) }
 
-func NewGencodeUnsafeA() Object {
+func NewGencodeUnsafeA() interface{} {
 	return &GencodeUnsafeA{
 		Name:     randString(16),
 		BirthDay: time.Now().UnixNano(),

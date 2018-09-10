@@ -1,7 +1,6 @@
 package goserbench
 
 import (
-	"errors"
 	"math/rand"
 	"time"
 )
@@ -17,7 +16,7 @@ type XDRA struct {
 	Money    uint64
 }
 
-func NewXDRA() Object {
+func NewXDRA() interface{} {
 	return &XDRA{
 		Name:     randString(16),
 		BirthDay: time.Now().Unix(),
@@ -26,14 +25,4 @@ func NewXDRA() Object {
 		Spouse:   rand.Intn(2) == 1,
 		Money:    rand.Uint64(),
 	}
-}
-
-func (a *XDRA) Reset() { *a = XDRA{} }
-
-func (a *XDRA) AssertEqual(i interface{}) (bool, error) {
-	o, ok := i.(*XDRA)
-	if !ok {
-		return false, errors.New("not A type")
-	}
-	return *a == *o, nil
 }
